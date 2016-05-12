@@ -21,11 +21,7 @@ namespace redis4net.Appender
         public override void ActivateOptions()
         {
             base.ActivateOptions();
-            this.ErrorHandler = new LogAllErrorHandler(new OnlyOnceErrorHandler());
-
             InitializeConnectionFactory();
-
-            ErrorHandler.Error("!!!!!!Calling ActivateOptions!!!!!");
         }
 
 
@@ -75,34 +71,6 @@ namespace redis4net.Appender
                 ErrorHandler.Error("Unable to send logging event to remote redis host " + RemoteAddress + " on port " + RemotePort, exception, ErrorCode.WriteFailure);
                 this.errorStateDateTime = DateTime.UtcNow;
             }
-        }
-    }
-
-    public class LogAllErrorHandler : IErrorHandler
-    {
-        private readonly OnlyOnceErrorHandler onlyOnceErrorHandler;
-
-        public LogAllErrorHandler(OnlyOnceErrorHandler onlyOnceErrorHandler)
-        {
-            this.onlyOnceErrorHandler = onlyOnceErrorHandler;
-        }
-
-        public void Error(string message, Exception e, ErrorCode errorCode)
-        {
-            onlyOnceErrorHandler.Error(message, e, errorCode);
-            onlyOnceErrorHandler.Reset();
-        }
-
-        public void Error(string message, Exception e)
-        {
-            onlyOnceErrorHandler.Error(message, e);
-            onlyOnceErrorHandler.Reset();
-        }
-
-        public void Error(string message)
-        {
-            onlyOnceErrorHandler.Error(message);
-            onlyOnceErrorHandler.Reset();
         }
     }
 }
